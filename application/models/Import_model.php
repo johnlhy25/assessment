@@ -9,13 +9,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
         
         public function importData($data) {
-            $res = $this->db->insert_batch('t2mis', $data);
-            if($res){
-                return TRUE;
-            }else{
-                return FALSE;
+            foreach ($data as $row) {
+                $this->db->where(['QUALIFICATION' => $row['QUALIFICATION'], 'T' => $row['T']]);
+                $exists = $this->db->get('t2mis')->row();
+        
+                if ($exists) {
+                    // Update all columns in the row
+                    $this->db->where(['QUALIFICATION' => $row['QUALIFICATION'], 'T' => $row['T']]);
+                    $this->db->update('t2mis', $row);
+                } else {
+                    // Insert new record
+                    $this->db->insert('t2mis', $row);
+                }
             }
+            return TRUE;
         }
+        
 
         public function report() {
             $this->db->select('B, E, COUNT(DISTINCT T) as count_T');
@@ -33,6 +42,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $this->db->select('AH'); // Select only the AH column
             $query = $this->db->get('t2mis'); // Execute the query
             return $query->result_array(); // Return the results as an array
+        }
+
+        public function get_tree_data() {
+            $this->db->select('B as province, E as school, RMQ as rqm_number, AP as competency_status, COUNT(AP) as count');
+            $this->db->from('t2mis');
+            $this->db->group_by(['B', 'E', 'RMQ', 'AP']);
+            $this->db->order_by('B, E, RMQ'); 
+            $query = $this->db->get();
+            return $query->result_array();
         }
         
         

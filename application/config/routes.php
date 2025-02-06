@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'import/index';
-$route['classification_report'] = 'import/classification_report';
+$route['export_excel'] = 'import/export_excel';
 
 
 $route['404_override'] = '';
